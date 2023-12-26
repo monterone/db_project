@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0371c84c-af37-4bd4-9458-db7d791ccff9" name="Changes" comment="crud for project">
+    <list default="true" id="0371c84c-af37-4bd4-9458-db7d791ccff9" name="Changes" comment="crud for assignments">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -82,7 +83,9 @@
       <workItem from="1703436894098" duration="2408000" />
       <workItem from="1703439780051" duration="309000" />
       <workItem from="1703441193916" duration="6104000" />
-      <workItem from="1703515694337" duration="2226000" />
+      <workItem from="1703515694337" duration="2573000" />
+      <workItem from="1703529724881" duration="5561000" />
+      <workItem from="1703576061653" duration="4656000" />
     </task>
     <task id="LOCAL-00001" summary="commit1">
       <option name="closed" value="true" />
@@ -108,7 +111,15 @@
       <option name="project" value="LOCAL" />
       <updated>1703444068970</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="crud for assignments">
+      <option name="closed" value="true" />
+      <created>1703518499947</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1703518499947</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -118,7 +129,8 @@
     <MESSAGE value="commit1" />
     <MESSAGE value="task 1: initialization of bd" />
     <MESSAGE value="crud for project" />
-    <option name="LAST_COMMIT_MESSAGE" value="crud for project" />
+    <MESSAGE value="crud for assignments" />
+    <option name="LAST_COMMIT_MESSAGE" value="crud for assignments" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/db_project$main.coverage" NAME="main Coverage Results" MODIFIED="1703255413331" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

@@ -24,7 +24,8 @@ def create_project():
         project = Project(**data)
         session.add(project)
         session.commit()
-        return jsonify({"message": "Project created successfully", "project": data}), 200
+        serialized_project = project.serialize()
+        return jsonify({"message": "Project created successfully", "project": serialized_project}), 200
     except Exception as e:
         session.rollback()
         return jsonify({"error": str(e)}), 500
@@ -33,7 +34,7 @@ def create_project():
 
 
 @app.route("/projects", methods=["GET"])
-def get_all_projects():
+def get_projects():
     session = DBSession()
     try:
         projects = session.query(Project).all()
@@ -47,7 +48,7 @@ def get_all_projects():
 
 
 @app.route("/projects/<int:project_id>", methods=["GET"])
-def get_project_by_id(project_id):
+def get_project(project_id):
     session = DBSession()
     try:
         project = session.query(Project).filter_by(id=project_id).first()
@@ -109,9 +110,12 @@ def create_assignment():
     data = request.get_json()
     project_id = data.get('project_id')
     employee_id = data.get('employee_id')
-    role = data.get('role')
+    issue_date = data.get('issue_date')
+    complexity = data.get('complexity')
+    planned_completion_date = data.get('planned_completion_date')
+    actual_completion_date = data.get('actual_completion_date')
 
-    if not all([project_id, employee_id, role]):
+    if not all([project_id, employee_id, issue_date, complexity, planned_completion_date, actual_completion_date]):
         return jsonify({'error': 'Missing data in the request'}), 400
 
     with DBSession() as session:
@@ -121,12 +125,20 @@ def create_assignment():
         if not project or not employee:
             return jsonify({'error': 'Project or employee not found'}), 404
 
-        assignment = Assignment(project=project, employee=employee, role=role)
+        assignment = Assignment(
+            project=project,
+            employee=employee,
+            issue_date=issue_date,
+            complexity=complexity,
+            planned_completion_date=planned_completion_date,
+            actual_completion_date=actual_completion_date
+        )
 
         try:
             session.add(assignment)
             session.commit()
-            return jsonify({'message': 'Assignment created successfully', 'assignment': assignment.serialize()}), 201
+            serialized_assignment = assignment.serialize()
+            return jsonify({'assignment': serialized_assignment, 'message': 'Assignment created successfully'}), 200
         except Exception as e:
             session.rollback()
             return jsonify({'error': str(e)}), 500
@@ -155,19 +167,20 @@ def update_assignment(assignment_id):
     session = DBSession()
 
     data = request.get_json()
-    new_role = data.get('role')
 
     assignment = session.query(Assignment).get(assignment_id)
 
     if not assignment:
         return jsonify({'error': 'Assignment not found'}), 404
 
-    if new_role:
-        assignment.role = new_role
+    assignment.issue_date = data.get('issue_date', assignment.issue_date)
+    assignment.complexity = data.get('complexity', assignment.complexity)
+    assignment.planned_completion_date = data.get('planned_completion_date', assignment.planned_completion_date)
+    assignment.actual_completion_date = data.get('actual_completion_date', assignment.actual_completion_date)
 
     try:
         session.commit()
-        return jsonify({'message': 'Assignment updated successfully', 'assignment': assignment.serialize()})
+        return jsonify({'message': 'Assignment updated successfully', 'assignment': assignment.serialize()}), 200
     except Exception as e:
         session.rollback()
         return jsonify({'error': str(e)}), 500
@@ -185,10 +198,101 @@ def delete_assignment(assignment_id):
     try:
         session.delete(assignment)
         session.commit()
-        return jsonify({'message': 'Assignment deleted successfully'})
+        return jsonify({'message': 'Assignment deleted successfully'}), 200
     except Exception as e:
         session.rollback()
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/employees', methods=['POST'])
+def create_employee():
+    session = DBSession()
+
+    data = request.get_json()
+    position = data.get('position')
+    full_name = data.get('full_name')
+    identifier = data.get('identifier')
+
+    if not position or not full_name or not identifier:
+        return jsonify({'error': 'Missing data in the request'}), 400
+
+    employee = Employee(position=position, full_name=full_name, identifier=identifier)
+
+    try:
+        session.add(employee)
+        session.commit()
+        return jsonify({'message': 'Employee created successfully', 'employee': employee.serialize()}), 200
+    except Exception as e:
+        session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/employees', methods=['GET'])
+def get_employees():
+    session = DBSession()
+    employees = session.query(Employee).all()
+    serialized_employees = [employee.serialize() for employee in employees]
+    return jsonify({'employees': serialized_employees})
+
+
+@app.route('/employees/<int:employee_id>', methods=['GET'])
+def get_employee(employee_id):
+    session = DBSession()
+    employee = session.query(Employee).get(employee_id)
+
+    if not employee:
+        return jsonify({'error': 'Employee not found'}), 404
+
+    return jsonify({'employee': employee.serialize()})
+
+
+@app.route('/employees/<int:employee_id>', methods=['PUT'])
+def update_employee(employee_id):
+    session = DBSession()
+
+    employee = session.query(Employee).get(employee_id)
+
+    if not employee:
+        return jsonify({'error': 'Employee not found'}), 404
+
+    data = request.get_json()
+    full_name = data.get('full_name')
+    position = data.get('position')
+
+    if not full_name or not position:
+        return jsonify({'error': 'Missing data in the request'}), 400
+
+    employee.full_name = full_name
+    employee.position = position
+
+    try:
+        session.commit()
+        return jsonify({'message': 'Employee updated successfully', 'employee': employee.serialize()}), 200
+    except Exception as e:
+        session.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        session.close()
+
+
+@app.route('/employees/<int:employee_id>', methods=['DELETE'])
+def delete_employee(employee_id):
+    session = DBSession()
+
+    employee = session.query(Employee).get(employee_id)
+
+    if not employee:
+        return jsonify({'error': 'Employee not found'}), 404
+
+    try:
+        session.delete(employee)
+        session.commit()
+        return jsonify({'message': 'Employee deleted successfully'}), 200
+    except Exception as e:
+        session.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        session.close()
 
 
 if __name__ == "__main__":
