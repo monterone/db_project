@@ -6,14 +6,16 @@ from models import Base, Project, Assignment, Employee
 
 app = Flask(__name__)
 
-DATABASE_URL = "postgresql://postgres:postgres1337@localhost:5432/"
-DB_NAME = "project_management_db"
 
-engine = create_engine(f"{DATABASE_URL}{DB_NAME}")
-Base.metadata.bind = engine
-Base.metadata.create_all(engine)
+def create_database(db_owner):
+    database_url = f"postgresql://postgres:postgres1337@localhost:5432/{db_owner}"
+    engine = create_engine(database_url)
+    Base.metadata.create_all(engine)
+    return engine
 
-DBSession = sessionmaker(bind=engine)
+
+db_engine = create_database("project_management_db")
+DBSession = sessionmaker(bind=db_engine)
 
 
 @app.route("/projects", methods=["POST"])
